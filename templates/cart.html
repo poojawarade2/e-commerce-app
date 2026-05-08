@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+<h1>Your Cart</h1>
+{% if items %}
+<table>
+  <thead>
+    <tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td>{{ it.product.name }}</td>
+      <td>{{ it.quantity }}</td>
+      <td>Rs. {{ "%.2f"|format(it.product.price) }}</td>
+      <td>Rs. {{ "%.2f"|format(it.subtotal) }}</td>
+      <td>
+        <form action="{{ url_for('remove_from_cart', product_id=it.product.id) }}" method="post">
+          <button type="submit">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td colspan="3"><strong>Total</strong></td>
+      <td colspan="2"><strong>Rs. {{ "%.2f"|format(total) }}</strong></td>
+    </tr>
+  </tbody>
+</table>
+<p><a class="btn" href="{{ url_for('checkout') }}">Checkout</a></p>
+{% else %}
+<p>Cart is empty. <a href="{{ url_for('index') }}">Continue shopping</a></p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Order placed{% endblock %}
+{% block content %}
+<h1>Order placed!</h1>
+<p>Thank you, {{ order.customer_name }}. Your order <strong>#{{ order.id }}</strong> for Rs. {{ "%.2f"|format(order.total) }} has been received.</p>
+<p>A confirmation will be sent to {{ order.customer_email }}.</p>
+<p><a class="btn" href="{{ url_for('index') }}">Continue shopping</a></p>
+{% endblock %}

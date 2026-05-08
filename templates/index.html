@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Products</h1>
+<div class="grid">
+  {% for p in products %}
+    <div class="card">
+      <img src="{{ p.image_url }}" alt="{{ p.name }}">
+      <h3>{{ p.name }}</h3>
+      <p class="price">Rs. {{ "%.2f"|format(p.price) }}</p>
+      <a class="btn" href="{{ url_for('product_detail', product_id=p.id) }}">View</a>
+    </div>
+  {% else %}
+    <p>No products yet. Run <code>python seed.py</code> to add some.</p>
+  {% endfor %}
+</div>
+{% endblock %}
