@@ -8,6 +8,7 @@ PRODUCTS = [
     {'name': 'Laptop Backpack', 'description': 'Fits 15.6 inch laptops, USB charging port.', 'price': 1299.00, 'image_url': 'https://placehold.co/300x300?text=Backpack', 'stock': 30},
     {'name': 'Mechanical Keyboard', 'description': 'RGB backlit, blue switches, USB-C.', 'price': 4499.00, 'image_url': 'https://placehold.co/300x300?text=Keyboard', 'stock': 10},
     {'name': 'Wireless Mouse', 'description': 'Ergonomic, 6 programmable buttons.', 'price': 899.00, 'image_url': 'https://placehold.co/300x300?text=Mouse', 'stock': 40},
+    {'name': 'Wireless Headphones', 'description': 'Ergonomic, 6 programmable buttons.', 'price': 899.00, 'image_url': 'https://placehold.co/300x300?text=Mouse', 'stock': 40},
 ]
 
 
