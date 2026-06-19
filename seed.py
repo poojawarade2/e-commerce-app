@@ -8,19 +8,24 @@ PRODUCTS = [
     {'name': 'Laptop Backpack', 'description': 'Fits 15.6 inch laptops, USB charging port.', 'price': 1299.00, 'image_url': 'https://placehold.co/300x300?text=Backpack', 'stock': 30},
     {'name': 'Mechanical Keyboard', 'description': 'RGB backlit, blue switches, USB-C.', 'price': 4499.00, 'image_url': 'https://placehold.co/300x300?text=Keyboard', 'stock': 10},
     {'name': 'Wireless Mouse', 'description': 'Ergonomic, 6 programmable buttons.', 'price': 899.00, 'image_url': 'https://placehold.co/300x300?text=Mouse', 'stock': 40},
+    {'name': 'Digital Camera', 'description': '24MP mirrorless camera, 4K video, Wi-Fi, 18-55mm lens kit.', 'price': 34999.00, 'image_url': 'https://placehold.co/300x300?text=Camera', 'stock': 12},
+    {'name': 'Cleaning Bot', 'description': 'Robot vacuum with smart mapping, app control, auto-empty dock.', 'price': 18999.00, 'image_url': 'https://placehold.co/300x300?text=Cleaning+Bot', 'stock': 18},
 ]
 
 
 def seed():
     with app.app_context():
         db.create_all()
-        if Product.query.count() == 0:
-            for p in PRODUCTS:
+        added = 0
+        for p in PRODUCTS:
+            if not Product.query.filter_by(name=p['name']).first():
                 db.session.add(Product(**p))
+                added += 1
+        if added:
             db.session.commit()
-            print(f'Seeded {len(PRODUCTS)} products')
+            print(f'Seeded {added} new product(s)')
         else:
-            print('Products already exist, skipping seed')
+            print('All products already exist, nothing to seed')
 
 
 if __name__ == '__main__':
