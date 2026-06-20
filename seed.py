@@ -10,6 +10,7 @@ PRODUCTS = [
     {'name': 'Wireless Mouse', 'description': 'Ergonomic, 6 programmable buttons.', 'price': 899.00, 'image_url': 'https://placehold.co/300x300?text=Mouse', 'stock': 40},
     {'name': 'Digital Camera', 'description': '24MP mirrorless camera, 4K video, Wi-Fi, 18-55mm lens kit.', 'price': 34999.00, 'image_url': 'https://placehold.co/300x300?text=Camera', 'stock': 12},
     {'name': 'Cleaning Bot', 'description': 'Robot vacuum with smart mapping, app control, auto-empty dock.', 'price': 18999.00, 'image_url': 'https://placehold.co/300x300?text=Cleaning+Bot', 'stock': 18},
+    {'name': 'Washing Machine', 'description': '7kg fully-automatic front-load washer, 1400 RPM, inverter motor.', 'price': 27999.00, 'image_url': 'https://placehold.co/300x300?text=Washing+Machine', 'stock': 10},
 ]
 
 
