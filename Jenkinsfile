@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        SERVICES = 'product-service order-service cart-service gateway'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -12,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'docker --version'
-                sh 'echo Building App'
+                sh 'docker compose build'
             }
         }
 
