@@ -5,11 +5,11 @@
 {% for order in orders %}
   <div class="order">
     <h3>Order #{{ order.id }} &mdash; Rs. {{ "%.2f"|format(order.total) }}</h3>
-    <p>{{ order.customer_name }} ({{ order.customer_email }}) &mdash; {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p>{{ order.customer_name }} ({{ order.customer_email }}) &mdash; {{ order.created_at }}</p>
     <p>{{ order.address }}</p>
     <ul>
       {% for it in order.items %}
-        <li>{{ it.product.name }} x {{ it.quantity }} &mdash; Rs. {{ "%.2f"|format(it.price * it.quantity) }}</li>
+        <li>{{ it.product.name }} x {{ it.quantity }} &mdash; Rs. {{ "%.2f"|format(it.subtotal) }}</li>
       {% endfor %}
     </ul>
   </div>

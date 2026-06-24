@@ -10,7 +10,7 @@
       <a class="btn" href="{{ url_for('product_detail', product_id=p.id) }}">View</a>
     </div>
   {% else %}
-    <p>No products yet. Run <code>python seed.py</code> to add some.</p>
+    <p>No products yet.</p>
   {% endfor %}
 </div>
 {% endblock %}
