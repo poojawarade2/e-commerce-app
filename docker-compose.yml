@@ -1,35 +1,114 @@
+# Microservices stack for Dummy Shop.
+# Each stateful service owns its own datastore (database-per-service):
+#   product-service -> product-db (MySQL)
+#   order-service   -> order-db   (MySQL)
+#   cart-service    -> cart-redis (Redis)
+# The gateway is the public entrypoint (port 8000) and orchestrates the rest.
 services:
-  db:
+  # ---- datastores ----------------------------------------------------------
+  product-db:
     image: mysql:8.0
-    container_name: shop-db
+    container_name: shop-product-db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: shop
+      MYSQL_DATABASE: productdb
       MYSQL_USER: shopuser
       MYSQL_PASSWORD: shoppass
     volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+      - product_db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
       interval: 5s
       timeout: 3s
       retries: 20
 
-  app:
-    build: .
-    container_name: shop-app
+  order-db:
+    image: mysql:8.0
+    container_name: shop-order-db
     restart: unless-stopped
     environment:
-      DATABASE_URL: mysql+pymysql://shopuser:shoppass@db:3306/shop
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: orderdb
+      MYSQL_USER: shopuser
+      MYSQL_PASSWORD: shoppass
+    volumes:
+      - order_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  cart-redis:
+    image: redis:7-alpine
+    container_name: shop-cart-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # ---- services ------------------------------------------------------------
+  product-service:
+    build: ./services/product-service
+    container_name: shop-product-service
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://shopuser:shoppass@product-db:3306/productdb
+    ports:
+      - "8001:8001"
+    depends_on:
+      product-db:
+        condition: service_healthy
+
+  cart-service:
+    build: ./services/cart-service
+    container_name: shop-cart-service
+    restart: unless-stopped
+    environment:
+      REDIS_URL: redis://cart-redis:6379/0
+    ports:
+      - "8003:8003"
+    depends_on:
+      cart-redis:
+        condition: service_healthy
+
+  order-service:
+    build: ./services/order-service
+    container_name: shop-order-service
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://shopuser:shoppass@order-db:3306/orderdb
+      PRODUCT_SERVICE_URL: http://product-service:8001
+    ports:
+      - "8002:8002"
+    depends_on:
+      order-db:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+
+  gateway:
+    build: ./services/gateway
+    container_name: shop-gateway
+    restart: unless-stopped
+    environment:
       SECRET_KEY: change-me-in-prod
+      PRODUCT_SERVICE_URL: http://product-service:8001
+      CART_SERVICE_URL: http://cart-service:8003
+      ORDER_SERVICE_URL: http://order-service:8002
     ports:
       - "8000:8000"
     depends_on:
-      db:
+      product-service:
+        condition: service_healthy
+      cart-service:
+        condition: service_healthy
+      order-service:
         condition: service_healthy
 
 volumes:
-  db_data:
+  product_db_data:
+  order_db_data:

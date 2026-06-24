@@ -1,4 +1,5 @@
-from app import app
+from sqlalchemy.exc import IntegrityError
+
 from models import db, Product
 
 PRODUCTS = [
@@ -14,20 +15,27 @@ PRODUCTS = [
 ]
 
 
-def seed():
-    with app.app_context():
-        db.create_all()
-        added = 0
-        for p in PRODUCTS:
-            if not Product.query.filter_by(name=p['name']).first():
-                db.session.add(Product(**p))
-                added += 1
-        if added:
-            db.session.commit()
-            print(f'Seeded {added} new product(s)')
-        else:
-            print('All products already exist, nothing to seed')
+def seed_products():
+    """Idempotently seed the catalog. Safe to call on every startup."""
+    added = 0
+    for p in PRODUCTS:
+        if not Product.query.filter_by(name=p['name']).first():
+            db.session.add(Product(**p))
+            added += 1
+    if not added:
+        print('Catalog already seeded, nothing to do')
+        return
+    try:
+        db.session.commit()
+        print(f'Seeded {added} new product(s)')
+    except IntegrityError:
+        # Another worker/instance seeded concurrently; the unique name guard tripped.
+        db.session.rollback()
+        print('Catalog seeded concurrently by another worker')
 
 
 if __name__ == '__main__':
-    seed()
+    from app import app
+    with app.app_context():
+        db.create_all()
+        seed_products()
